@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/cyberpunk-ui-portfolio/static/css/main.341bb5fc.css",
+    "main.js": "/cyberpunk-ui-portfolio/static/js/main.abfa5291.js",
+    "static/js/453.ef524121.chunk.js": "/cyberpunk-ui-portfolio/static/js/453.ef524121.chunk.js",
+    "index.html": "/cyberpunk-ui-portfolio/index.html",
+    "main.341bb5fc.css.map": "/cyberpunk-ui-portfolio/static/css/main.341bb5fc.css.map",
+    "main.abfa5291.js.map": "/cyberpunk-ui-portfolio/static/js/main.abfa5291.js.map",
+    "453.ef524121.chunk.js.map": "/cyberpunk-ui-portfolio/static/js/453.ef524121.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.341bb5fc.css",
+    "static/js/main.abfa5291.js"
+  ]
+}
