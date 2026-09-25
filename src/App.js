@@ -333,28 +333,47 @@ import './index.css';
         );
     };
 
-    const GameWrapper = ({ gameLogic, buttonText }) => {
-        const canvasRef = useRef(null);
-        const startBtnRef = useRef(null);
+  ```jsx
+const GameWrapper = ({ gameLogic, buttonText }) => {
+    const canvasRef = useRef(null);
+    const startBtnRef = useRef(null);
 
-        useEffect(() => {
-            const canvas = canvasRef.current;
-            const startBtn = startBtnRef.current;
-            const cleanup = gameLogic(canvas, startBtn);
-            return () => {
-                if (cleanup) cleanup();
-            };
-        }, [gameLogic]);
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const startBtn = startBtnRef.current;
 
-        return (
-            <div>
-                <canvas ref={canvasRef} width="780" height="400" className="game-canvas w-full bg-[#0a192f]"></canvas>
-                <button ref={startBtnRef} className="game-start-btn">
-                    {buttonText}
-                </button>
-            </div>
-        );
-    };
+        if (!canvas || !startBtn) return;
+
+        const cleanup = gameLogic(canvas, startBtn);
+
+        return () => {
+            if (typeof cleanup === 'function') {
+                cleanup();
+            }
+        };
+    }, [gameLogic]);
+
+    return (
+        <div className="w-full">
+            <canvas
+                ref={canvasRef}
+                width={780}
+                height={400}
+                className="game-canvas block w-full max-w-full bg-[#0a192f]"
+            />
+
+            <button
+                ref={startBtnRef}
+                type="button"
+                className="game-start-btn"
+            >
+                {buttonText}
+            </button>
+        </div>
+    );
+};
+```
+
 
     const DinoGame = () => <GameWrapper gameLogic={initializeDinoGame} buttonText="START DIAGNOSTIC" />;
     const SnakeGame = () => <GameWrapper gameLogic={initializeSnakeGame} buttonText="INITIALIZE DEFRAG" />;
@@ -423,18 +442,6 @@ import './index.css';
         startBtn.addEventListener('click', startGame);
         return () => { document.removeEventListener('keydown', keydownHandler); document.removeEventListener('keyup', keyupHandler); clearInterval(gameLoop); };
     }
-    function initializeAimTrainGame(canvas, startBtn) {
-        const ctx = canvas.getContext('2d'); let score, misses, targets, isGameRunning, spawnInterval, gameLoop; const maxTargets = 15; let targetsSpawned = 0;
-        class Target { constructor() { this.radius = 15; this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius; this.y = Math.random() * (canvas.height - this.radius * 2) + this.radius; this.createdAt = Date.now(); this.lifetime = 2000; } draw() { ctx.fillStyle = 'var(--hot-pink)'; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fill(); } isClicked(mouseX, mouseY) { const distance = Math.sqrt((mouseX - this.x)**2 + (mouseY - this.y)**2); return distance < this.radius; } }
-        function startGame() { isGameRunning = true; startBtn.style.display = 'none'; score = 0; misses = 0; targets = []; targetsSpawned = 0; gameLoop = requestAnimationFrame(updateGame); spawnInterval = setInterval(spawnTarget, 800); }
-        function clickHandler(e) { if (!isGameRunning) return; const rect = canvas.getBoundingClientRect(); const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top; let clicked = false; for (let i = targets.length - 1; i >= 0; i--) { if (targets[i].isClicked(mouseX, mouseY)) { targets.splice(i, 1); score++; clicked = true; break; } } if (!clicked) misses++; }
-        function spawnTarget() { if (targetsSpawned >= maxTargets) { clearInterval(spawnInterval); return; } targets.push(new Target()); targetsSpawned++; }
-        function updateGame() { if (!isGameRunning) return; ctx.clearRect(0, 0, canvas.width, canvas.height); const now = Date.now(); for (let i = targets.length - 1; i >= 0; i--) { if (now - targets[i].createdAt > targets[i].lifetime) { targets.splice(i, 1); misses++; } else { targets[i].draw(); } } if (misses >= 3 || (targetsSpawned >= maxTargets && targets.length === 0)) { endGame(); return; } ctx.fillStyle = 'var(--main-teal)'; ctx.font = "16px 'Share Tech Mono'"; ctx.fillText(`SCORE: ${score}`, 10, 20); ctx.fillStyle = 'var(--bright-red)'; ctx.fillText(`MISSES: ${misses}/3`, 10, 40); animationFrameId = requestAnimationFrame(updateGame); }
-        function endGame() { isGameRunning = false; clearInterval(spawnInterval); cancelAnimationFrame(animationFrameId); ctx.fillStyle = 'var(--bright-red)'; ctx.font = "30px 'Orbitron'"; ctx.textAlign = 'center'; ctx.fillText('TEST COMPLETE', canvas.width / 2, canvas.height / 2 - 20); ctx.font = "16px 'Share Tech Mono'"; ctx.fillText(`FINAL SCORE: ${score}`, canvas.width / 2, canvas.height / 2 + 10); ctx.textAlign = 'left'; startBtn.textContent = 'RE-TEST'; startBtn.style.display = 'block'; }
-        canvas.addEventListener('click', clickHandler);
-        startBtn.addEventListener('click', startGame);
-        let animationFrameId;
-        return () => { canvas.removeEventListener('click', clickHandler); clearInterval(spawnInterval); cancelAnimationFrame(animationFrameId); };
-    }
+    
 
     export default App;
